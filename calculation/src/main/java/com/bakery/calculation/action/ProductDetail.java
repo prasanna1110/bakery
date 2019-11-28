@@ -1,10 +1,14 @@
 package com.bakery.calculation.action;
 
 import com.bakery.calculation.model.ProductPrice;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProductDetail {
 
@@ -12,33 +16,51 @@ public class ProductDetail {
   private static Map<String, List<ProductPrice>> productPriceMap = new HashMap<>();
 
   public ProductDetail() {
-    productDetail.put("VS5", "Vegemite Scroll");
-    productDetail.put("MB11", "Blueberry Muffin");
-    productDetail.put("CF", "Croissant");
+    List<String> productData = readFile("product.csv");
 
-    List<ProductPrice> vs = new ArrayList<>();
-    vs.add(new ProductPrice(3, 6.99f));
-    vs.add(new ProductPrice(5, 8.99f));
-    productPriceMap.put("VS5", vs);
+    productData.forEach(
+        line -> {
+          String[] product = line.split(",");
+          productDetail.put(product[0], product[1]);
+        });
 
-    List<ProductPrice> mb = new ArrayList<>();
-    mb.add(new ProductPrice(2, 9.95f));
-    mb.add(new ProductPrice(5, 16.95f));
-    mb.add(new ProductPrice(8, 24.95f));
-    productPriceMap.put("MB11", mb);
+    List<String> productPriceInfo = readFile("productPrice.csv");
 
-    List<ProductPrice> cf = new ArrayList<>();
-    cf.add(new ProductPrice(3, 5.95f));
-    cf.add(new ProductPrice(5, 9.95f));
-    cf.add(new ProductPrice(9, 16.99f));
-    productPriceMap.put("CF", cf);
+    productPriceInfo.stream()
+        .map(
+            data -> {
+              String[] values = data.split(",");
+              return new ProductPrice(
+                  Integer.parseInt(values[1].trim()),
+                  Float.parseFloat(values[2].trim()),
+                  values[0]);
+            })
+        .forEach(
+            data -> {
+              List<ProductPrice> temp = new ArrayList<>();
+              if (!productPriceMap.containsKey(data.getCode())) {
+                temp.add(data);
+                productPriceMap.put(data.getCode(), temp);
+              } else {
+                temp = productPriceMap.get(data.getCode());
+                temp.add(data);
+                productPriceMap.put(data.getCode(), temp);
+              }
+            });
   }
 
-  public String getProductDescription(String s) {
-    return productDetail.get(s);
+  private List<String> readFile(String fileName) {
+    InputStream fileResource = ProductDetail.class.getClassLoader().getResourceAsStream(fileName);
+    return new BufferedReader(new InputStreamReader(fileResource))
+        .lines()
+        .collect(Collectors.toList());
   }
 
-  public List<ProductPrice> getProductPrice(String s) {
-    return productPriceMap.get(s);
+  public String getProductDescription(String productCode) {
+    return productDetail.get(productCode);
+  }
+
+  public List<ProductPrice> getProductPrice(String productCode) {
+    return productPriceMap.get(productCode);
   }
 }

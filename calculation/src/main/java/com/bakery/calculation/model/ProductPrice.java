@@ -1,12 +1,14 @@
 package com.bakery.calculation.model;
 
 public class ProductPrice {
+  private String code;
   private Integer quantity;
   private Float price;
 
-  public ProductPrice(Integer quantity, Float price) {
+  public ProductPrice(Integer quantity, Float price, String code) {
     this.quantity = quantity;
     this.price = price;
+    this.code = code;
   }
 
   public int getQuantity() {
@@ -15,5 +17,9 @@ public class ProductPrice {
 
   public Float getPrice() {
     return price;
+  }
+
+  public String getCode() {
+    return code;
   }
 }
