@@ -1,4 +1,4 @@
-package com.bakery.calculation.model;
+package com.bakery.invoice.generation.model;
 
 public class ProductPrice {
   private String code;

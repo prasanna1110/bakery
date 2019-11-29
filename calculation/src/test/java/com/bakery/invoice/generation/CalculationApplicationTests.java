@@ -1,4 +1,4 @@
-package com.bakery.calculation;
+package com.bakery.invoice.generation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
